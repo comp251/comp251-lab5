@@ -54,7 +54,7 @@ In this lab, you'll write a clone of the "popular" [Yik Yak
 app](https://yikyak.com/) using sockets and threads, _Rhodes Ramble_ (tagline:
 _Discover your [Clowder](https://www.merriam-webster.com/dictionary/clowder)_).
 
-This will involve implenting the specification of the protocol that Rhodes
+This will involve implementing the specification of the protocol that Rhodes
 Ramble clients and servers use to communicate.
 
 This lab is broken up into three parts:
@@ -143,7 +143,7 @@ client-server system, where user clients post Rambles (Yaks) and comments on
 Rambles to a central server.
 
 Rhodes Ramble contains the core features of Yik Yak (semi-anonymous with a
-persitent identity, posts, comments, up/down votes, and user karma) but does not
+persistent identity, posts, comments, up/down votes, and user karma) but does not
 implement location-based services.
 
 Before you get started with the lab, it might be a good idea to experiment with
@@ -166,7 +166,7 @@ is chosen by you but not visible to other students. Your pin is your password
 
 After logging, you'll be assigned an emoji and token. Your emoji can be viewed
 by getting your user info. The token is an application-internal way of
-identiyfing a user; it is a shared secret between your client program and the
+identifying a user; it is a shared secret between your client program and the
 server.
 
 > __Note:__ Token-based authentication is a common practice. In this model, a
@@ -343,7 +343,7 @@ VOTE token post_id up_down\n
 * `token` is the user's token.
 * `post_id` is the id of the comment or ramble that is being voted on.
 * `up_down` is a positive or negative integer. The sign of the integer indicates
-  the direction of the vote (postive = upvote, negative = downvote).
+  the direction of the vote (positive = upvote, negative = downvote).
 
 #### Response format
 
@@ -563,7 +563,7 @@ You have been given an implementation of the core logic of the Rhodes Ramble
 server. Take a look at the functions in `rr_core.h`. These functions can be used
 to complete all of the client requests.
 
-Similiarly, you've been given an implementation of two frontend clients that can
+Similarly, you've been given an implementation of two frontend clients that can
 be used to interact with the Rhodes Ramble service. Take a look at the
 `rr_console_client.c` file; this program can be used to interact with the
 service in a rudimentary way (see section [below](#testing-frontend-console).
