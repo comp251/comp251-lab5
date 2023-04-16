@@ -1,0 +1,8 @@
+*.o
+src/rr_curses_client
+src/rr_console_client
+src/rr_server
+src/scratch/emoji_menu
+src/tests/users_test
+src/tests/posts_test
+src/tests/rr_core_test
