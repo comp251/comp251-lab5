@@ -32,7 +32,7 @@ unsigned int rr_add_post(unsigned int token, char *post_text);
 
 // Add a comment.
 //
-// Returns commend id (positive) on sucess; 0 on failure.
+// Returns comment id (positive) on success; 0 on failure.
 unsigned int rr_add_comment(unsigned int token, unsigned int post_id,
                             char *comment_text);
 
@@ -43,16 +43,18 @@ unsigned int rr_register(char *user_name, unsigned int pin);
 
 // Retrieve a list of posts.
 //
-// posts will be allocated to store a list of pointers to posts. Must be NULL or
-// a valid list. caller takes ownership of this list.
+// posts will be allocated to store a list of pointers to posts. Must be NULL.
+// caller takes ownership of this list and must free both the list and the
+// posts.
 //
 // Returns the number of posts, or -1 on error.
 int rr_get_posts(unsigned int token, struct rr_post ***posts);
 
 // Retrieve a list of comments for a post.
 //
-// comments will be allocated to store a list of comments. Must be NULL or a
-// caller takes ownership of this list.
+// comments will be allocated to store a list of comments. Must be NULL.
+// caller takes ownership of this list and must free both the list and the
+// posts.
 //
 // Returns the number of comments, or -1 on error.
 int rr_get_comments(unsigned int token, unsigned int post_id,
