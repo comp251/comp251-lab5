@@ -239,8 +239,6 @@ enum FORM_OPTS exec_post_form(char **buffer) {
 
   form_driver(form, REQ_OVL_MODE);
   post_form(form);
-  mvwprintw(g.windows.post.window, 0, 0, "enter accept/esc to quit");
-  mvwprintw(g.windows.post.window, 1, 1, "text: ");
   keypad(g.windows.post.window, 1);
 
   enum FORM_OPTS result = FORM_OPT_UNKNOWN;
@@ -253,6 +251,9 @@ enum FORM_OPTS exec_post_form(char **buffer) {
 
   int c;
   while (result == FORM_OPT_UNKNOWN) {
+    mvwprintw(g.windows.post.window, 0, 0, "enter accept/esc to quit");
+    mvwprintw(g.windows.post.window, 1, 1, "text: ");
+    wrefresh(g.windows.post.window);
     c = getch();
     switch (c) {
     case '\t':
@@ -286,7 +287,6 @@ enum FORM_OPTS exec_post_form(char **buffer) {
       form_driver(form, c);
       break;
     }
-    wrefresh(g.windows.post.window);
   }
   form_driver(form, REQ_VALIDATION);
 
@@ -528,6 +528,9 @@ int view_menu_fn() {
     } else {
       mvwprintw(g.windows.posts.window, 0, 0, "no posts...");
     }
+    show_panel(g.windows.posts.panel);
+    update_panels();
+    refresh();
     getch();
     free(posts);
     return 0;
@@ -601,7 +604,7 @@ int info_menu_fn() {
     wchar_t wstr[2];
     wstr[0] = user.icon;
     wstr[1] = L'\0';
-    mvwprintw(g.windows.user.window, line++, 0, "icon: %s", wstr);
+    mvwprintw(g.windows.user.window, line++, 0, "icon: %ls", wstr);
     mvwprintw(g.windows.user.window, line++, 0, "karma: %d", user.karma);
   }
   top_panel(g.windows.user.panel);
@@ -639,9 +642,6 @@ int login_menu_fn() {
 
   form_driver(form, REQ_OVL_MODE);
   post_form(form);
-  mvwprintw(g.windows.login.window, 0, 0, "enter to accept/esc to quit");
-  mvwprintw(g.windows.login.window, 1, 1, "Username: ");
-  mvwprintw(g.windows.login.window, 3, 1, "Pin: ");
   keypad(g.windows.login.window, 1);
 
   enum FORM_OPTS result = FORM_OPT_UNKNOWN;
@@ -653,6 +653,10 @@ int login_menu_fn() {
 
   int c;
   while (result == FORM_OPT_UNKNOWN) {
+    mvwprintw(g.windows.login.window, 0, 0, "enter to accept/esc to quit");
+    mvwprintw(g.windows.login.window, 1, 1, "Username: ");
+    mvwprintw(g.windows.login.window, 3, 1, "Pin: ");
+    wrefresh(g.windows.login.window);
     c = getch();
     switch (c) {
     case '\t':
@@ -691,7 +695,6 @@ int login_menu_fn() {
       form_driver(form, c);
       break;
     }
-    wrefresh(g.windows.login.window);
   }
   form_driver(form, REQ_VALIDATION);
 
@@ -710,6 +713,8 @@ int login_menu_fn() {
       g.token = token;
     }
     mvwprintw(g.windows.login.window, 6, 0, "press any key");
+    wrefresh(g.windows.login.window);
+    refresh();
     getch();
   }
 
