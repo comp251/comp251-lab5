@@ -622,11 +622,11 @@ int login_menu_fn() {
   hide_all_panels();
 
   FIELD *field[3];
-  field[2] = NULL;                          // null-terminate
-  field[0] = new_field(1, 15, 1, 12, 0, 0); // username
+  field[2] = NULL;                         // null-terminate
+  field[0] = new_field(1, 15, 0, 0, 0, 0); // username
   set_field_back(field[0], A_UNDERLINE);
   set_field_back(field[0], O_AUTOSKIP);
-  field[1] = new_field(1, 15, 3, 12, 0, 0); // pin
+  field[1] = new_field(1, 15, 2, 0, 0, 0); // pin
   set_field_back(field[1], A_UNDERLINE);
   set_field_back(field[1], O_AUTOSKIP);
 
@@ -635,28 +635,30 @@ int login_menu_fn() {
   // set_field_type(field[1], TYPE_INTEGER, 10);
 
   FORM *form = new_form(field);
+  WINDOW *form_win = derwin(g.windows.login.window, 0, 0, 1, 12);
   set_form_win(form, g.windows.login.window);
-
-  show_panel(g.windows.login.panel);
-  update_panels();
+  set_form_sub(form, form_win);
 
   form_driver(form, REQ_OVL_MODE);
   post_form(form);
-  keypad(g.windows.login.window, 1);
+  keypad(form_win, 1);
 
   enum FORM_OPTS result = FORM_OPT_UNKNOWN;
 
   pos_form_cursor(form);
   curs_set(1);
-
+  mvwprintw(g.windows.login.window, 0, 0, "enter to accept/esc to quit");
+  mvwprintw(g.windows.login.window, 1, 1, "Username: ");
+  mvwprintw(g.windows.login.window, 3, 1, "Pin: ");
+  show_panel(g.windows.login.panel);
+  update_panels();
   refresh();
+  wrefresh(g.windows.login.window);
+  wrefresh(form_win);
 
   int c;
   while (result == FORM_OPT_UNKNOWN) {
-    mvwprintw(g.windows.login.window, 0, 0, "enter to accept/esc to quit");
-    mvwprintw(g.windows.login.window, 1, 1, "Username: ");
-    mvwprintw(g.windows.login.window, 3, 1, "Pin: ");
-    wrefresh(g.windows.login.window);
+
     c = getch();
     switch (c) {
     case '\t':
@@ -695,6 +697,7 @@ int login_menu_fn() {
       form_driver(form, c);
       break;
     }
+    wrefresh(form_win);
   }
   form_driver(form, REQ_VALIDATION);
 
@@ -705,6 +708,7 @@ int login_menu_fn() {
     char *pin = strip(field_buffer(field[1], 0));
     int ok = do_login(g.conn_fd, name, pin, &token);
     if (ok < 0) {
+      g.token = 0;
       mvwprintw(g.windows.login.window, 5, 0,
                 "Error authenticating %s with pin %s!", name, pin);
     } else {
@@ -722,6 +726,7 @@ int login_menu_fn() {
   free_form(form);
   free_field(field[0]);
   free_field(field[1]);
+  delwin(form_win);
 
   hide_panel(g.windows.login.panel);
   update_panels();

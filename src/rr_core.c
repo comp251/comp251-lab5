@@ -46,7 +46,7 @@ unsigned int rr_add_post(unsigned int token, char *post_text) {
 
 // Add a comment.
 //
-// Returns comment id (positive) on success; 0 on failure.
+// Returns commend id (positive) on sucess; 0 on failure.
 unsigned int rr_add_comment(unsigned int token, unsigned int post_id,
                             char *comment_text) {
   // validate user
@@ -79,7 +79,10 @@ unsigned int rr_register(char *user_name, unsigned int pin) {
   user_t user;
   strncpy(user.user_name, user_name, sizeof(user.user_name));
   user.pin = pin;
-  register_user(&user);
+  int ok = register_user(&user);
+  if (ok <= 0) {
+    return 0;
+  }
   return user.token;
 }
 
@@ -103,9 +106,8 @@ int get_posts_helper(struct rr_post ***posts, post_iter_t *it) {
 
 // Retrieve a list of posts.
 //
-// comments will be allocated to store a list of comments. Must be NULL.
-// caller takes ownership of this list and must free both the list and the
-// posts.
+// posts will be allocated to store a list of pointers to posts. Must be or a
+// valid pointer. caller takes ownership of this list.
 //
 // Returns the number of posts, or 0 on error.
 int rr_get_posts(unsigned int token, struct rr_post ***posts) {
@@ -125,9 +127,8 @@ int rr_get_posts(unsigned int token, struct rr_post ***posts) {
 
 // Retrieve a list of comments for a post.
 //
-// comments will be allocated to store a list of comments. Must be NULL.
-// caller takes ownership of this list and must free both the list and the
-// posts.
+// comments will be allocated to store a list of comments. caller takes
+// ownership of this list.
 //
 // Returns the number of comments, or 0 on error.
 int rr_get_comments(unsigned int token, unsigned int post_id,
