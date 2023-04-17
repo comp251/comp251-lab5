@@ -4,6 +4,7 @@ _Rhodes Ramble: Discover Your Clowder._
 <!--ts-->
 * [Introduction](#introduction)
    * [Collaboration policy](#collaboration-policy)
+* [Experimenting with Clients and Servers](#experimenting-with-clients-and-servers)
 * [Yik Yak and Rhodes Ramble](#yik-yak-and-rhodes-ramble)
    * [An overly academic description of Yik Yak](#an-overly-academic-description-of-yik-yak)
    * [Rhodes Ramble](#rhodes-ramble)
@@ -44,7 +45,7 @@ _Rhodes Ramble: Discover Your Clowder._
 * [Turning it in](#turning-it-in)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: langm, at: Sun Apr 16 17:37:43 CDT 2023 -->
+<!-- Added by: langm, at: Sun Apr 16 20:20:23 CDT 2023 -->
 
 <!--te-->
 
@@ -105,6 +106,45 @@ others, I will find it extremely suspicious if your code is similar...
 
 🔝 [back to top](#toc)
 
+# Experimenting with Clients and Servers
+
+Before you get started, it might be helpful to experiment with the client and
+server programs.
+
+Reference solutions are in `/opt/share/251/bin`. To run the server, you need to
+choose a port number that is not in use (choose a different value from 9999).
+
+```
+$ /opt/share/251/bin/rr_server 9999
+```
+
+Then, you can connect with a client:
+
+```
+$ /opt/share/251/bin/rr_curses_client lily.rhodes.edu 9999
+$ /opt/share/251/bin/rr_console_client lily.rhodes.edu 9999
+```
+
+When you are building your own versions of these programs, you can also
+experiement by running them against each other (in separate windows or using
+tmux).
+
+```
+$ make
+$ ./rr_server 8765
+$ ./rr_curses_client lily.rhodes.edu 8765
+```
+
+There is also a class instance that is running on port 4444. Use either the
+reference solution or your own solution to connect.
+
+```
+$ /opt/share/251/bin/rr_curses_client lily.rhodes.edu 4444
+$ ./rr_curses_client lily.rhodes.edu 4444
+```
+
+🔝 [back to top](#toc)
+
 # Yik Yak and Rhodes Ramble
 
 ## An overly academic description of Yik Yak
@@ -154,7 +194,7 @@ programs. I have a version of the server running that is available for anyone to
 connect to.
 
 ```
-$ /opt/share/251/bin/rr_curses_client lily.rhodes.edu 44444
+$ /opt/share/251/bin/rr_curses_client lily.rhodes.edu 4444
 ```
 
 The first program argument is the host to connect to, and the second is the
