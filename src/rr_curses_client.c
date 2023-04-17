@@ -634,6 +634,7 @@ int login_menu_fn() {
   // set_field_type(field[0], TYPE_ALNUM, 15);
   // set_field_type(field[1], TYPE_INTEGER, 10);
 
+  wclear(g.windows.login.window);
   FORM *form = new_form(field);
   WINDOW *form_win = derwin(g.windows.login.window, 0, 0, 1, 12);
   set_form_win(form, g.windows.login.window);
