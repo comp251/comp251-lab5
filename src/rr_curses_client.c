@@ -88,7 +88,7 @@ void hide_all_panels();
 // Executes the post/comment form; stores post text in buffer.
 enum FORM_OPTS exec_post_form(char **buffer);
 // View comments on the given post id.
-int view_comments(unsigned int post_id);
+int view_comments(struct rr_client_post_t *parent);
 // Post a comment on the given post id.
 void post_comment(unsigned int post_id);
 // Execute login menu.
@@ -104,10 +104,11 @@ int exit_fn();
 // display a list of posts. cbuff is a pointer to an array of char*. if cbuff is
 // NULL, the array will be allocated. if elements of cbuff are NULL, space will
 // be allocated for post text. caller responsible for freeing these buffers.
-// buffers can be reused on subsequent calls.
+// buffers can be reused on subsequent calls. parent should be NULL when
+// displaying posts and non-NULL when displaying comments.
 int display_posts(WINDOW *window, struct rr_client_post_t **posts,
                   int posts_len, char ***cbuff, int *updown, char *last_opt,
-                  int init_selected);
+                  int init_selected, struct rr_client_post_t *parent);
 
 // Forward declaration of basic utils.
 //
@@ -293,6 +294,16 @@ enum FORM_OPTS exec_post_form(char **buffer) {
   if (result == FORM_OPT_DONE) {
     // post request
     char *t = strip(field_buffer(field[0], 0));
+    // strip runs of spaces
+    char *c = t;
+    char *p = c;
+    while (*c) {
+      *c = *(p++);
+      while (*p && isspace(*p) && *c == *p) {
+        p++;
+      }
+      c++;
+    }
     *buffer = malloc(strlen(t) + 1);
     strcpy(*buffer, t);
   }
@@ -340,7 +351,7 @@ void post_comment(unsigned int post_id) {
 
 int display_posts(WINDOW *window, struct rr_client_post_t **posts,
                   int posts_len, char ***cbuff, int *updown, char *last_opt,
-                  int init_selected) {
+                  int init_selected, struct rr_client_post_t *parent) {
   if (!*cbuff) {
     // if there's no buffer of post text, make one.
     *cbuff = calloc(posts_len, sizeof(char *));
@@ -384,6 +395,10 @@ int display_posts(WINDOW *window, struct rr_client_post_t **posts,
     mvwprintw(window, menu_offset++, 0, "enter to select/esc for back");
   } else {
     mvwprintw(window, menu_offset++, 0, "esc for back");
+  }
+  if (parent) {
+    mvwprintw(window, menu_offset++, 0, "%s", parent->text);
+    menu_offset += strlen(parent->text) / WIN_WIDTH;
   }
   MENU *menu = new_menu(items);
   set_menu_win(menu, window);
@@ -455,7 +470,10 @@ int display_posts(WINDOW *window, struct rr_client_post_t **posts,
   return selected;
 }
 
-int view_comments(unsigned int post_id) {
+int view_comments(struct rr_client_post_t *parent) {
+  unsigned int post_id = parent->id;
+  hide_all_panels();
+  wclear(g.windows.comments.window);
   top_panel(g.windows.comments.panel);
   show_panel(g.windows.comments.panel);
   update_panels();
@@ -479,7 +497,7 @@ int view_comments(unsigned int post_id) {
   int selected = 0;
   while (1) {
     selected = display_posts(g.windows.comments.window, posts, n_posts, &cbuff,
-                             &updown, "new comment", selected);
+                             &updown, "new comment", selected, parent);
     assert(selected != SELECTED_NONE);
     if (selected == SELECTED_ESC) {
       // esc
@@ -512,12 +530,14 @@ int view_comments(unsigned int post_id) {
     free(cbuff);
   }
   hide_panel(g.windows.comments.panel);
+  update_panels();
 
   return refresh;
 }
 
 int view_menu_fn() {
   // get posts, display
+  wclear(g.windows.posts.window);
   hide_all_panels();
   struct rr_client_post_t **posts =
       calloc(RR_MAX_POSTS, sizeof(struct rr_client_post_t *));
@@ -554,7 +574,7 @@ int view_menu_fn() {
   int selected = 0;
   while (1) {
     selected = display_posts(g.windows.posts.window, posts, n_posts, &cbuff,
-                             &updown, NULL, selected);
+                             &updown, NULL, selected, NULL);
     assert(selected != SELECTED_NONE);
     if (selected == SELECTED_ESC) {
       // esc
@@ -572,7 +592,7 @@ int view_menu_fn() {
     } else {
       // get comments
       hide_panel(g.windows.posts.panel);
-      while (view_comments(posts[selected]->id)) {
+      while (view_comments(posts[selected])) {
         // refresh as long as a new comment is posted.
       }
       show_panel(g.windows.posts.panel);
@@ -588,6 +608,9 @@ int view_menu_fn() {
     }
     free(cbuff);
   }
+
+  hide_panel(g.windows.posts.panel);
+  update_panels();
 
   return 0;
 }
